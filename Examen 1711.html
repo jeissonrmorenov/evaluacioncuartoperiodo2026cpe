@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Final de Ciencias de la Computación: Gobstones y PSeInt</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        
+        .header-logo { text-align: center; margin-bottom: 10px; }
+        .header-logo img { width: 90px; height: auto; }
+        
+        h1 { color: #1b365d; text-align: center; font-size: 22px; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #1b365d; }
+        input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        input[readonly] { background-color: #eef2f7; color: #1b365d; font-weight: bold; }
+        textarea { height: 160px; font-family: monospace; resize: vertical; background-color: #fafbfc; }
+        .question-card { background: #fafbfc; border-left: 4px solid #1b365d; padding: 15px; margin-bottom: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .question-title { font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
+        .options label { display: block; font-weight: normal; margin-bottom: 8px; cursor: pointer; padding: 5px; border-radius: 3px; transition: background 0.2s; }
+        .options label:hover { background: #eef2f7; }
+        .btn-container { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn { background-color: #1b365d; color: white; border: none; padding: 12px 20px; font-size: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; width: 48%; }
+        .btn:hover { background-color: #12233f; }
+        .btn-secondary { background-color: #7f8c8d; }
+        .btn-secondary:hover { background-color: #616a6b; }
+        .btn-success { background-color: #27ae60; width: 100%; margin-top: 10px; }
+        .btn-success:hover { background-color: #219653; }
+        .btn-info { background-color: #2980b9; width: 100%; margin-bottom: 15px; }
+        .btn-info:hover { background-color: #1f618d; }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        #results { display: none; margin-top: 25px; padding: 20px; background: #e8f8f5; border: 1px solid #a3e4d7; border-radius: 5px; text-align: center; }
+        #results h2 { color: #117a65; margin-top: 0; }
+        .error-msg { color: #c0392b; font-size: 13px; margin-top: 10px; font-weight: bold; display: none; }
+        .page-indicator { text-align: center; font-size: 13px; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
+        .section-header { background: #1b365d; color: white; padding: 10px 15px; border-radius: 5px; margin: 15px 0; font-size: 16px; font-weight: bold; }
+        .enunciado-box { background: #eef2f7; border: 1px solid #cbd5e1; padding: 12px; border-radius: 5px; margin-bottom: 15px; font-size: 14px; color: #1e293b; line-height: 1.5; }
+        .warning-box { background: #fde8e8; border: 1px solid #f8b4b4; color: #9b1c1c; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; font-weight: bold; text-align: center; display: none; }
+        .admin-btn { position: absolute; top: 20px; right: 20px; background: #e67e22; color: white; border: none; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .admin-panel { display: none; background: #fdfefe; border: 2px solid #e67e22; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .student-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #ddd; padding: 8px 12px; margin-bottom: 6px; border-radius: 4px; font-size: 13px; flex-wrap: wrap; gap: 5px; }
+        .btn-delete { background: #c0392b; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-delete:hover { background: #962d22; }
+        .btn-download-ind { background: #2980b9; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-download-ind:hover { background: #1f618d; }
+        iframe { width: 100%; height: 400px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+<div class="container">
+    <button class="admin-btn" onclick="abrirPanelAdmin()">🔑 Panel Profesor</button>
+
+    <div class="header-logo">
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAAPAA8BAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=" alt="Colegio Pedagógico Emmanuel" id="logoColegio">
+    </div>
+
+    <h1>Examen Final de Ciencias de la Computación</h1>
+    <div class="subtitle">Colegio Pedagógico Emmanuel — Evaluación Segura (Gobstones / PSeInt)</div>
+
+    <!-- Panel de Profesor / Módulo Docente -->
+    <div id="adminPanel" class="admin-panel">
+        <h3 style="color: #e67e22; margin-top:0;">Módulo Docente (Panel de Administración)</h3>
+        
+        <div id="loginAdminSection">
+            <p style="font-size: 13px;">Ingrese su cédula de maestro para gestionar intentos y descargar notas:</p>
+            <input type="password" id="adminCedula" placeholder="Digite su cédula de profesor" style="max-width: 250px; display:inline-block; margin-right: 10px;" onkeydown="if(event.key === 'Enter') verificarAdmin();">
+            <button type="button" class="btn" style="width: auto; padding: 8px 15px; display:inline-block;" onclick="verificarAdmin()">Acceder</button>
+        </div>
+
+        <div id="adminContenido" style="margin-top: 15px; display:none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <p style="font-weight: bold; color: #27ae60; margin:0;">¡Acceso concedido maestro!</p>
+                <button type="button" class="btn" style="background: #7f8c8d; width: auto; padding: 6px 12px; font-size: 12px;" onclick="cerrarSesionAdmin()">🚪 Cerrar Sesión / Salir</button>
+            </div>
+            
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn" style="background: #27ae60; width: auto; padding: 10px 15px;" onclick="descargarNotasDocente()">📥 Descargar Consolidado General (CSV)</button>
+                <button type="button" class="btn" style="background: #2980b9; width: auto; padding: 10px 15px;" onclick="sincronizarDesdeNube()">☁️ Sincronizar y Ver desde la Nube</button>
+                <button type="button" class="btn" style="background: #c0392b; width: auto; padding: 10px 15px;" onclick="limpiarIntentos()">🗑️ Borrar Todos los Bloqueos Locales</button>
+            </div>
+
+            <p style="font-size: 13px; font-weight: bold;" id="tituloListaEstudiantes">Estudiantes con intento registrado / bloqueado (Local):</p>
+            <div id="listaIntentos" style="background: #f9f9f9; border: 1px solid #ccc; padding: 10px; max-height: 250px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <div id="warningFoco" class="warning-box">⚠️ ¡ADVERTENCIA! Has salido de la pantalla del examen. Este evento ha sido registrado y restará 0.5 puntos a tu nota teórica.</div>
+
+    <form id="quizForm" onsubmit="event.preventDefault(); calificarExamen();">
+        
+        <!-- PÁGINA 1: Validación Directa por Documento (Sin contraseña previa) -->
+        <div class="page-section active" id="page-1">
+            <div class="page-indicator">Página 1 de 12 (Identificación del Estudiante)</div>
+            
+            <div class="question-card" style="border-left-color: #1b365d;">
+                <div class="question-title" style="color: #1b365d;">🎓 Validación de Identidad</div>
+                
+                <div class="form-group">
+                    <label for="documento">Número de Documento de Identidad (Tarjeta de Identidad / Registro Civil):</label>
+                    <input type="text" id="documento" placeholder="Digite su número de identidad..." oninput="buscarEstudiante()">
+                    <div id="errorDoc" class="error-msg" style="display:block; color:#2980b9; margin-top:5px;">Digite su número de documento para autocompletar su nombre, grado y examen asignado.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo del Estudiante:</label>
+                    <input type="text" id="nombre" readonly placeholder="Se autocompletará...">
+                </div>
+
+                <div class="form-group">
+                    <label for="grado">Grado:</label>
+                    <input type="text" id="grado" readonly placeholder="Se autocompletará...">
+                </div>
+
+                <input type="hidden" id="version" value="">
+                <input type="hidden" id="textoVariantePractica" value="">
+
+                <div class="btn-container">
+                    <div></div>
+                    <button type="button" id="btnComenzar" class="btn" disabled style="opacity: 0.6; cursor: not-allowed;" onclick="iniciarExamen()">Comenzar Examen ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor dinámico para las 20 preguntas barajadas (Páginas 2 a 11) -->
+        <div id="paginasPreguntasContainer"></div>
+
+        <!-- PÁGINA 12: Parte Práctica (Punto 21) -->
+        <div class="page-section" id="page-12">
+            <div class="page-indicator">Página 12 de 12 (Parte Práctica Gradual - Punto 21)</div>
+            <div class="section-header">II. Pregunta Práctica (Calificación independiente sobre 5.0)</div>
+            
+            <div class="question-card">
+                <div class="question-title">Enunciado Asignado según tu Grado:</div>
+                <div id="enunciadoPractica" class="enunciado-box"></div>
+
+                <button type="button" class="btn btn-info" onclick="toggleEmulador()">💻 Abrir Entorno / Emulador para Probar Código</button>
+                <div id="contenedorEmulador" style="display:none;">
+                    <p style="font-size: 13px; color: #555;">Puedes probar tu código aquí y luego copiarlo al cuadro de entrega:</p>
+                    <iframe id="iframeEmulador" src="" title="Intérprete Web"></iframe>
+                </div>
+
+                <div class="question-title" style="margin-top: 15px;">Escribe tu código definitivo desde cero aquí:</div>
+                <textarea id="codigoPractica" placeholder="// Escribe tu código aquí..."></textarea>
+            </div>
+
+            <div id="errorGeneral" class="error-msg">Por favor complete los campos requeridos.</div>
+
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary" onclick="cambiarPagina(-1)">⬅ Anterior</button>
+                <button type="submit" class="btn btn-success">Enviar y Guardar Examen</button>
+            </div>
+        </div>
+
+    </form>
+
+    <div id="results">
+        <h2>¡Examen Finalizado con Éxito!</h2>
+        <p id="scoreText" style="font-size: 18px; font-weight: bold; line-height: 1.6;"></p>
+        <div style="margin-top: 20px;">
+            <button type="button" class="btn btn-success" style="width: 100%;" onclick="terminarIntento()">Terminar Intento / Salir</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const baseDatosEstudiantes = {
+        // SÉPTIMO (Gobstones)
+        "1121932131": { nombre: "AVILA AGUDELO SALOME", grado: "Séptimo", version: "v_septimo" },
+        "1029999100": { nombre: "AVILA MATEUS HELEN SOFIA", grado: "Séptimo", version: "v_septimo" },
+        "1123812056": { nombre: "CASTRO GARZON SARITA", grado: "Séptimo", version: "v_septimo" },
+        "1119891893": { nombre: "CIPRIAN BONILLA MARIA JOSE", grado: "Séptimo", version: "v_septimo" },
+        "1029999956": { nombre: "RIOS WILCHES EMMANUEL", grado: "Séptimo", version: "v_septimo" },
+        "1123441915": { nombre: "CORTES LOPEZ DANGIE ALECXEIMY", grado: "Séptimo", version: "v_septimo" },
+        "1123813068": { nombre: "CUADROS BARRERA LINDA ANGELINA", grado: "Séptimo", version: "v_septimo" },
+        "1122932650": { nombre: "FUENTES MUÑOZ RODRIGO ARMANDO", grado: "Séptimo", version: "v_septimo" },
+        "1023946331": { nombre: "MOLANO RINCON SANTIAGO ANDRES", grado: "Séptimo", version: "v_septimo" },
+        "1122934105": { nombre: "NOREÑA DIAZ SARA SOFIA", grado: "Séptimo", version: "v_septimo" },
+        "1123811211": { nombre: "OCHOA LOAIZA SAMUEL THOMAS", grado: "Séptimo", version: "v_septimo" },
+        "1123443454": { nombre: "ORJUELA SANCHEZ GABRIELA VALENTINA", grado: "Séptimo", version: "v_septimo" },
+        "1109926116": { nombre: "OSSA ESPINAL EMANUEL", grado: "Séptimo", version: "v_septimo" },
+        "1153464830": { nombre: "PARADA ACOSTA ZURISADAI", grado: "Séptimo", version: "v_septimo" },
+        "1117827019": { nombre: "PARRA CORTES NIKOL SOFIA", grado: "Séptimo", version: "v_septimo" },
+        "1121934903": { nombre: "PARRA GUERRERO DYLANN", grado: "Séptimo", version: "v_septimo" },
+        "1122527896": { nombre: "RIOS MURCIA HAROLD STEBAN", grado: "Séptimo", version: "v_septimo" },
+        "1029965890": { nombre: "SANABRIA CAMPOS IAM FELIPE", grado: "Séptimo", version: "v_septimo" },
+
+        // NOVENO
+        "1029993861": { nombre: "ALVAREZ CIFUENTES LUIS ALEJANDRO", grado: "Noveno", version: "v1" },
+        "1122928904": { nombre: "BARRERA SIERRA DAILY CAROLINA", grado: "Noveno", version: "v1" },
+        "1208463067": { nombre: "BENITEZ ROCHA SERGIO ALEJANDRO", grado: "Noveno", version: "v1" },
+        "1122931087": { nombre: "CARDOZO SAAVEDRA JHON ALEXANDER", grado: "Noveno", version: "v1" },
+        "1029994788": { nombre: "CORREA CRISTIANO JUAN FELIPE", grado: "Noveno", version: "v1" },
+        "1122931277": { nombre: "GARZON OCAMPO SAMUEL ANDRES", grado: "Noveno", version: "v1" },
+        "1034666780": { nombre: "JAIMES VANEGAS JUAN DAVID", grado: "Noveno", version: "v1" },
+        "1122526394": { nombre: "LOPEZ SOLANO SOFFIVALENTINA", grado: "Noveno", version: "v1" },
+        "1122929176": { nombre: "MAHECHA CARRERO JUAN ESTEBAN", grado: "Noveno", version: "v1" },
+        "1117820846": { nombre: "PARRA CORTEZ JHON ALEJANDRO", grado: "Noveno", version: "v1" },
+        "1029963230": { nombre: "RAMIREZ RODRIGUEZ WILSON JAVIER", grado: "Noveno", version: "v1" },
+        "1122526203": { nombre: "RINCON RINCON MARIA JOSE", grado: "Noveno", version: "v1" },
+        "1029995001": { nombre: "RIOS WILCHES GADY IBAR", grado: "Noveno", version: "v1" },
+        "1123811025": { nombre: "RODRIGUEZ ARANGO ANGIE LORENA", grado: "Noveno", version: "v1" },
+        "1161215400": { nombre: "ROJAS CORTES JIMMER YECID", grado: "Noveno", version: "v1" },
+        "1029658644": { nombre: "RUIZ ARIZA JUAN DIEGO", grado: "Noveno", version: "v1" },
+        "5595764":    { nombre: "SUAREZ ZERPA MARIEGNIS ESTHER", grado: "Noveno", version: "v1" },
+
+        // DÉCIMO
+        "1023390942": { nombre: "AGUDELO GARZON JUAN DAVID", grado: "Décimo", version: "v2" },
+        "1074557726": { nombre: "BARRERA CORREDOR ALISON MAYTE", grado: "Décimo", version: "v2" },
+        "1162463344": { nombre: "BURGOS MONROY ANDRES FELIPE", grado: "Décimo", version: "v2" },
+        "1122927041": { nombre: "CABAL MUÑOZ JAN PABLO", grado: "Décimo", version: "v2" },
+        "1123441164": { nombre: "COLORADO BARBOSA XIMENA", grado: "Décimo", version: "v2" },
+        "1123439596": { nombre: "CONDE BOBADILLA ASHLY CAMILA", grado: "Décimo", version: "v2" },
+        "1029992723": { nombre: "FERNANDEZ MARIÑO SAMUEL JAVIER", grado: "Décimo", version: "v2" },
+        "1123438840": { nombre: "GALINDO MALDONADO SAMUEL ALEJANDRO", grado: "Décimo", version: "v2" },
+        "1122522931": { nombre: "MORENO TIUSO JUAN ANDRES", grado: "Décimo", version: "v2" },
+        "1029992883": { nombre: "PEREZ ROA YALENA", grado: "Décimo", version: "v2" },
+        "1122928846": { nombre: "PIÑEROS DELGADO SANTIAGO ANDRES", grado: "Décimo", version: "v2" },
+        "1123808488": { nombre: "PINILLA ROJAS JUAN DAVID", grado: "Décimo", version: "v2" },
+        "1029994163": { nombre: "SAENZ LIMA ESMERALDA", grado: "Décimo", version: "v2" },
+        "1187213079": { nombre: "SEDANO MURCIA NICOLL LIZETH", grado: "Décimo", version: "v2" },
+        "1187213251": { nombre: "SEDANO PARDO KAROL YULIANA", grado: "Décimo", version: "v2" },
+
+        // UNDÉCIMO
+        "1123440041": { nombre: "ARGUELLO DUEÑAS ALMA GABRIELA", grado: "Undécimo", version: "v3" },
+        "1016721090": { nombre: "ARIZA JAIMES ASHLEY YULIANA", grado: "Undécimo", version: "v3" },
+        "1121903229": { nombre: "AVILA VERA SANTIAGO", grado: "Undécimo", version: "v3" },
+        "1121881887": { nombre: "CASTRO GARZON JUANITA", grado: "Undécimo", version: "v3" },
+        "1123439508": { nombre: "CUERVO HIDALGO JUAN JOSE", grado: "Undécimo", version: "v3" },
+        "1146124692": { nombre: "DELGADO ERAZO JUAN FELIPE", grado: "Undécimo", version: "v3" },
+        "1029987899": { nombre: "HERNANDEZ CASTAÑEDA SANTIAGO", grado: "Undécimo", version: "v3" },
+        "1034665468": { nombre: "JAIMES VANEGAS MARIA ALEJANDRA", grado: "Undécimo", version: "v3" },
+        "1122522572": { nombre: "LOZANO SUACHE DANNA ISABELLA", grado: "Undécimo", version: "v3" },
+        "1122927853": { nombre: "OLARTE GOMEZ KEVIN CAMILO", grado: "Undécimo", version: "v3" },
+        "1123438697": { nombre: "ORJUELA SANCHEZ MIGUEL ANGEL", grado: "Undécimo", version: "v3" },
+        "1123439462": { nombre: "PRIETO TORO DIEGO ARMANDO", grado: "Undécimo", version: "v3" },
+        "1014865453": { nombre: "RAMIREZ BERNAL ISABELLA", grado: "Undécimo", version: "v3" },
+        "1123807756": { nombre: "RODRIGUEZ AGUILERA EIMY GABRIELA", grado: "Undécimo", version: "v3" },
+        "1122928524": { nombre: "RODRIGUEZ ROMERO ISABEL SOFIA", grado: "Undécimo", version: "v3" },
+        "1122522566": { nombre: "ROMERO BERNAL SAMUEL ALEJANDRO", grado: "Undécimo", version: "v3" },
+        "1122521987": { nombre: "RUIZ ARIZA KAREN NICOLE", grado: "Undécimo", version: "v3" },
+        "1121883976": { nombre: "TIQUE GARCIA DYLAN JULIAN", grado: "Undécimo", version: "v3" }
+    };
+
+    const cedulaProfesor = "1121823399";
+    const urlGoogleScript = "https://script.google.com/macros/s/AKfycbyXgTvtGbWIjXZxI9ZVZNsOiMrrq7pwSsa3Jl1htSFWWy4-HD6U0i0RMczDNATS_vUC/exec";
+
+    // Bancos de preguntas por grado (Séptimo con Gobstones, Noveno/Décimo/Undécimo con PSeInt)
+    const bancosPorVersion = {
+        v_septimo: [
+            { enunciado: "¿Cuál es la principal ventaja de utilizar bucles o repeticiones simples en Gobstones en lugar de escribir instrucciones repetitivas de forma secuencial?", respuestas: [{texto: "Ahorran tiempo, evitan errores y mantienen el código más corto y ordenado.", correcta: true}, {texto: "Permiten cambiar el color del tablero automáticamente sin usar comandos.", correcta: false}, {texto: "Eliminan la necesidad de utilizar el bloque 'programa' al iniciar un proyecto.", correcta: false}, {texto: "Ejecutan las instrucciones una sola vez pero a mayor velocidad en pantalla.", correcta: false}] },
+            { enunciado: "Si se desea colocar 1328 bolitas rojas en una celda utilizando el comando 'repetir', ¿cómo debe estructurarse el bloque principal?", respuestas: [{texto: "Usando un bloque 'repetir 1328 veces' que contenga en su interior el comando 'Poner [Rojo]'.", correcta: true}, {texto: "Colocando 1328 bloques 'Poner [Rojo]' uno debajo del otro dentro del programa.", correcta: false}, {texto: "Creando 1328 procedimientos distintos llamados 'Poner roja'.", correcta: false}, {texto: "Usando un bloque 'Poner [Rojo]' y escribiendo el número 1328 en el parámetro de color.", correcta: false}] },
+            { enunciado: "¿Qué representa exactamente un procedimiento con parámetros en Gobstones?", respuestas: [{texto: "Un bloque de código reutilizable que acepta valores de entrada para personalizar su comportamiento.", correcta: true}, {texto: "Un comando primitivo fijo que solo sirve para mover el cabezal hacia el Norte.", correcta: false}, {texto: "Una expresión literal numérica que se ubica dentro de la pestaña 'Operadores'.", correcta: false}, {texto: "Un error de sintaxis que ocurre cuando se colocan bucles seguidos.", correcta: false}] },
+            { enunciado: "En el contexto de las guías, ¿qué ocurre al implementar repeticiones anidadas (un bucle dentro de otro bucle)?", respuestas: [{texto: "Se ejecutan patrones complejos como tableros, cuadrículas o figuras geométricas de manera eficiente.", correcta: true}, {texto: "El programa se detiene al finalizar la primera iteración del bucle interno.", correcta: false}, {texto: "El bucle externo anula las instrucciones contenidas dentro del bucle interno.", correcta: false}, {texto: "Solo es posible dibujar líneas verticales de un único color en la primera columna.", correcta: false}] },
+            { enunciado: "Si defines un procedimiento llamado 'colocar bolitas' con un parámetro de 'color' y otro de 'cantidad', ¿cómo se benefician la organización y el código?", respuestas: [{texto: "Permiten personalizar el color y la cantidad de repeticiones evitando duplicar código similar.", correcta: true}, {texto: "Obligan a crear un procedimiento nuevo cada vez que se cambia el color de la bolita.", correcta: false}, {texto: "Hacen que el tablero reduzca automáticamente su tamaño a una sola celda.", correcta: false}, {texto: "Impiden el uso del comando 'repetir' dentro de la definición del procedimiento.", correcta: false}] },
+            { enunciado: "En la actividad práctica 'El final del pasillo', ¿qué comando o procedimiento preexistente se utiliza en combinación con un bucle para desplazar al robot Lucho?", respuestas: [{texto: "El procedimiento 'Mover a Lucho al []', que desplaza al robot una celda en la dirección recibida como argumento.", correcta: true}, {texto: "El comando 'Ir al borde [Este]' sin parámetros adicionales.", correcta: false}, {texto: "El procedimiento 'Comer banana' repetido 9 veces hacia el Norte.", correcta: false}, {texto: "El bloque 'Usar el matafuego' combinado con movimientos diagonales.", correcta: false}] },
+            { enunciado: "Al trabajar con repeticiones anidadas, ¿cómo se denominan formalmente los bucles involucrados según la documentación?", respuestas: [{texto: "Repetir externo y Repetir interno.", correcta: true}, {texto: "Repetir primario y Repetir secundario.", correcta: false}, {texto: "Repetir superior y Repetir inferior.", correcta: false}, {texto: "Repetir inicial y Repetir final.", correcta: false}] },
+            { enunciado: "¿Cuál es el propósito principal de la actividad 'Candela, me quemo' descrita en las guías de soporte docente?", respuestas: [{texto: "Combinar un bucle 'repetir' con el procedimiento 'Usar el matafuego' para apagar un incendio.", correcta: true}, {texto: "Dibujar un cuadrado de bolitas azules de 11x11 utilizando cuatro direcciones.", correcta: false}, {texto: "Recolectar 100 monedas en un videojuego utilizando variables globales.", correcta: false}, {texto: "Colocar 20 bolitas de cada color en todas las celdas de un tablero de 10x10.", correcta: false}] },
+            { enunciado: "En la actividad relacionada con el planeta de Nano, ¿qué estructura se utilizó inicialmente para resolver el desafío antes de aplicar parámetros?", respuestas: [{texto: "Crear procedimientos específicos para cada fila combinando comandos primitivos como mover a la derecha y comer banana.", correcta: true}, {texto: "Utilizar un único bucle anidado triple sin ningún procedimiento definido.", correcta: false}, {texto: "Mover a Nano únicamente hacia el Sur y hacia el Oeste en cada turno.", correcta: false}, {texto: "Llenar todo el tablero con bolitas negras antes de recoger las frutas.", correcta: false}] },
+            { enunciado: "¿Qué secciones de la interfaz de Gobstones se deben utilizar para agregar un bloque de repetición y un número literal respectivamente?", respuestas: [{texto: "'Comandos' -> 'Repeticiones' ('Repetir ... veces') y 'Expresiones' -> 'Literales' el número.", correcta: true}, {texto: "'Definiciones' -> 'Funciones' y 'Comandos' -> 'Asignación'.", correcta: false}, {texto: "'Expresiones' -> 'Operadores' y 'Definiciones' -> 'Eventos'.", correcta: false}, {texto: "'Comandos' -> 'Alternativas' y 'Expresiones' -> 'Mis funciones'.", correcta: false}] },
+            { enunciado: "Cuando se realiza un procedimiento con parámetros para dibujar líneas en diferentes direcciones (Norte, Sur, Este, Oeste), ¿qué tipo de valor recibe típicamente el parámetro 'dirección'?", respuestas: [{texto: "Una dirección válida del tablero de Gobstones para controlar el movimiento del robot.", correcta: true}, {texto: "Un número entero que indica la cantidad de celdas a saltar.", correcta: false}, {texto: "El nombre de un color (Rojo, Azul, Verde o Negro).", correcta: false}, {texto: "Un valor booleano de verdadero o falso.", correcta: false}] },
+            { enunciado: "Si se requiere dibujar un cuadrado utilizando un procedimiento con un parámetro de 'cantidad' para las repeticiones de cada lado, ¿qué ventaja aporta frente a crear un procedimiento rígido?", respuestas: [{texto: "Permite reutilizar el mismo bloque para construir cuadrados de cualquier tamaño cambiando únicamente el argumento.", correcta: true}, {texto: "Dibuja los cuatro lados simultáneamente en un solo paso de ejecución.", correcta: false}, {texto: "Evita tener que especificar las direcciones Norte, Sur, Este y Oeste.", correcta: false}, {texto: "Convierte automáticamente el cuadrado en un triángulo rectángulo.", correcta: false}] },
+            { enunciado: "¿Cuál es el resultado conceptual de ejecutar un bucle anidado donde el bucle externo se repite 3 veces y el bucle interno se repite 5 veces?", respuestas: [{texto: "La instrucción interna se ejecutará un total de 15 veces (3 por 5).", correcta: true}, {texto: "La instrucción interna se ejecutará un total de 8 veces (3 más 5).", correcta: false}, {texto: "La instrucción interna se ejecutará únicamente 5 veces y luego se detendrá.", correcta: false}, {texto: "La instrucción externa se ejecutará 15 veces y la interna 3 veces.", correcta: false}] },
+            { enunciado: "En la Guía 4.1, al realizar la Actividad 1 sin utilizar el comando 'repetir', ¿qué debió hacerse para colocar distintas cantidades de bolitas rojas en un tablero de 4x1?", respuestas: [{texto: "Crear múltiples procedimientos específicos (como poner 5, 10 y 15 rojas) y llamarlos secuencialmente.", correcta: true}, {texto: "Usar un bloque 'repetir' con un parámetro variable.", correcta: false}, {texto: "Utilizar el comando 'Ir al borde' después de colocar cada bolita individual.", correcta: false}, {texto: "Cambiar el tamaño del tablero a 15x15 antes de ejecutar el programa.", correcta: false}] },
+            { enunciado: "¿Qué elemento visual o interactivo se utiliza en el editor de bloques de Gobstones para mostrar el bloque correspondiente a un parámetro recién agregado?", respuestas: [{texto: "Hacer clic sobre la 'Manito' asociada al parámetro en la definición del procedimiento.", correcta: true}, {texto: "El ícono de la bandera verde en la esquina superior.", correcta: false}, {texto: "Presionar el botón de signo menos (-) junto al nombre del programa.", correcta: false}, {texto: "Arrastrar el bloque desde la sección 'Alternativas'.", correcta: false}] },
+            { enunciado: "En la actividad donde se debían colocar simultáneamente bolitas de 4 colores distintos (rojo, verde, negro y azul) con cantidades específicas (5, 10, 15 y 20) en una celda usando repeticiones simples, ¿cómo se estructuró el código?", respuestas: [{texto: "Utilizando múltiples bloques 'repetir' consecutivos, cada uno con su respectiva cantidad y color de bolita.", correcta: true}, {texto: "Empleando un solo bloque 'repetir 50 veces' con los cuatro colores mezclados.", correcta: false}, {texto: "Moviendo el cabezal hacia el Este después de colocar cada bolita de color.", correcta: false}, {texto: "Usando un bucle anidado de 4x5 sin especificar los colores.", correcta: false}] },
+            { enunciado: "¿Cuál es el beneficio de mantener el código ordenado mediante el uso de bucles y procedimientos?", respuestas: [{texto: "Hace que el programa sea más corto, legible y fácil de entender o mantener a futuro.", correcta: true}, {texto: "Aumenta la cantidad de líneas de código para que el programa parezca más complejo.", correcta: false}, {texto: "Permite que Gobstones funcione sin necesidad de definir un tablero inicial.", correcta: false}, {texto: "Reemplaza todas las expresiones literales por comandos primitivos.", correcta: false}] },
+            { enunciado: "En los ejercicios de cuadrículas donde el robot debía retornar al comienzo de la fila para subir al siguiente nivel de una figura, ¿qué comando de posicionamiento se combinó frecuentemente con los bucles?", respuestas: [{texto: "Comandos de desplazamiento como 'Ir al borde [Oeste]' y 'Mover [Norte]'.", correcta: true}, {texto: "'Usar el matafuego' seguido de 'Mover [Sur]'.", correcta: false}, {texto: "'Poner [Negro]' en todas las esquinas del tablero.", correcta: false}, {texto: "'Ir al borde [Este]' seguido de 'Mover [Sur]'.", correcta: false}] },
+            { enunciado: "¿Qué error conceptual común comete un estudiante si al intentar dibujar una línea de 10 bolitas utiliza un bucle configurado con 'repetir 9 veces' (sin comandos 'Poner' adicionales fuera del bucle)?", respuestas: [{texto: "Dibujará una bolita menos de la requerida, ya que la cantidad de iteraciones será insuficiente.", correcta: true}, {texto: "Dibujará 11 bolitas porque el tablero empieza a contar desde cero.", correcta: false}, {texto: "El cabezal se saldrá del tablero provocando un error de ejecución (BOOM).", correcta: false}, {texto: "Cambiará el color de las bolitas de azul a rojo automáticamente.", correcta: false}] },
+            { enunciado: "De acuerdo con la progresión temática de las guías (Clases 1 a 4), ¿cuál es la secuencia lógica de aprendizaje en Gobstones?", respuestas: [{texto: "Instrucciones secuenciales -> Repeticiones simples -> Repeticiones anidadas -> Procedimientos con parámetros.", correcta: true}, {texto: "Procedimientos parametrizados -> Repeticiones anidadas -> Repeticiones simples -> Secuencias.", correcta: false}, {texto: "Repeticiones anidadas -> Procedimientos sin parámetros -> Literales -> Repeticiones simples.", correcta: false}, {texto: "Funciones matemáticas -> Eventos -> Variables globales -> Repeticiones simples.", correcta: false}] }
+        ],
+        v1: [
+            { enunciado: "¿Qué estructura repetitiva se debe utilizar cuando SÍ sabemos de antemano cuántas veces se va a repetir un bloque de código?", respuestas: [{texto: "Bucle Para", correcta: true}, {texto: "Bucle Mientras", correcta: false}, {texto: "Condicional Si-Entonces", correcta: false}, {texto: "Función Principal", correcta: false}] },
+            { enunciado: "En el Bucle 'Para', ¿qué elemento gestiona de manera automática la variable de control?", respuestas: [{texto: "La creación, revisión e incremento automático", correcta: true}, {texto: "El usuario por teclado", correcta: false}, {texto: "Únicamente el sistema operativo", correcta: false}, {texto: "El comando Borrar Pantalla", correcta: false}] },
+            { enunciado: "En PSeInt, ¿cuál es la función principal de un 'Contador'?", respuestas: [{texto: "Contar sucesos o vueltas aumentando por un valor fijo (ej. de 1 en 1)", correcta: true}, {texto: "Sumar precios de un carrito de compras", correcta: false}, {texto: "Almacenar textos largos o nombres", correcta: false}, {texto: "Detener por completo la computadora", correcta: false}] },
+            { enunciado: "Analiza la fórmula: contador = contador + 1. ¿Qué realiza primero la computadora antes de guardar el resultado?", respuestas: [{texto: "Resuelve la operación de la derecha (toma el valor viejo y le suma 1)", correcta: true}, {texto: "Guarda el valor de la izquierda", correcta: false}, {texto: "Borra todas las variables del programa", correcta: false}, {texto: "Pregunta la edad al usuario", correcta: false}] },
+            { enunciado: "¿Qué ocurre si en un bucle 'Mientras' olvidamos incluir la instrucción que modifica la variable de control?", respuestas: [{texto: "Se produce un Bucle Infinito que bloquea el programa", correcta: true}, {texto: "El programa se ejecuta una sola vez y termina", correcta: false}, {texto: "La computadora se reinicia automáticamente", correcta: false}, {texto: "Se imprime la tabla del 7", correcta: false}] },
+            { enunciado: "¿Cuál es la diferencia principal entre el Bucle 'Mientras' y el Bucle 'Para'?", respuestas: [{texto: "El Mientras se usa cuando no sabes cuándo termina; el Para cuando sabes la cantidad exacta", correcta: true}, {texto: "No existe ninguna diferencia, son exactamente iguales", correcta: false}, {texto: "El Para solo acepta números negativos", correcta: false}, {texto: "El Mientras no requiere condición", correcta: false}] },
+            { enunciado: "Si queremos simular una cuenta regresiva desde 10 hasta 1 en un bucle 'Para', ¿cómo debe configurarse el paso?", respuestas: [{texto: "Con Paso -1", correcta: true}, {texto: "Con Paso 1", correcta: false}, {texto: "Con Paso 0", correcta: false}, {texto: "Con Paso 10", correcta: false}] },
+            { enunciado: "¿Qué es la Programación Modular (el principio de 'Divide y Vencerás')?", respuestas: [{texto: "Romper un problema grande en piezas más pequeñas, independientes y específicas llamadas Funciones", correcta: true}, {texto: "Escribir todo el código en una sola línea", correcta: false}, {texto: "Dividir números entre cero", correcta: false}, {texto: "Multiplicar variables de texto", correcta: false}] },
+            { enunciado: "¿Qué beneficio principal aporta dividir un programa en módulos o funciones?", respuestas: [{texto: "Facilita la corrección de errores y mejora la legibilidad", correcta: true}, {texto: "Duplica el código innecesariamente", correcta: false}, {texto: "Hace que el programa sea mucho más lento", correcta: false}, {texto: "Elimina la necesidad de usar variables", correcta: false}] },
+            { enunciado: "En PSeInt, ¿dónde se deben crear o definir las Funciones personalizadas?", respuestas: [{texto: "Fuera del Algoritmo principal (generalmente arriba o abajo)", correcta: true}, {texto: "Adentro del Algoritmo principal exclusivamente", correcta: false}, {texto: "En un archivo de audio externo", correcta: false}, {texto: "En la barra de tareas de Windows", correcta: false}] },
+            { enunciado: "¿Qué significa 'Llamar' o 'Invocar' a una función?", respuestas: [{texto: "Escribir su nombre en el algoritmo principal para que despierte y ejecute sus instrucciones", correcta: true}, {texto: "Enviar un mensaje de texto al celular del profesor", correcta: false}, {texto: "Borrar la función del disco duro", correcta: false}, {texto: "Cambiarle el color a la consola", correcta: false}] },
+            { enunciado: "Si un programa utiliza un Acumulador (ej. total = total + precio), ¿qué analogía representa mejor su funcionamiento?", respuestas: [{texto: "El carrito de compras del supermercado que suma precios distintos", correcta: true}, {texto: "Una cuenta en la puerta de un evento que cuenta personas de 1 en 1", correcta: false}, {texto: "Un semáforo en rojo", correcta: false}, {texto: "Una contraseña secreta", correcta: false}] },
+            { enunciado: "Observa la siguiente línea: Para i = 1 Hasta 5 Con Paso 1 Hacer. ¿Cuántas veces se ejecutará el bloque interno?", respuestas: [{texto: "5 veces", correcta: true}, {texto: "1 vez", correcta: false}, {texto: "4 veces", correcta: false}, {texto: "Infinitas veces", correcta: false}] },
+            { enunciado: "¿Qué utilidad tiene la instrucción 'Dimension' en PSeInt cuando manejamos arreglos o vectores?", respuestas: [{texto: "Reservar un número exacto de casillas en la memoria RAM", correcta: true}, {texto: "Cambiar el diseño y color de la pantalla", correcta: false}, {texto: "Imprimir gráficos en 3D", correcta: false}, {texto: "Aumentar la velocidad del procesador", correcta: false}] },
+            { enunciado: "En un arreglo, ¿cómo se le llama al número que indica la posición exacta de un elemento dentro de la lista?", respuestas: [{texto: "Índice", correcta: true}, {texto: "Variable global", correcta: false}, {texto: "Contador lógico", correcta: false}, {texto: "Subrutina", correcta: false}] },
+            { enunciado: "¿Cuál de las siguientes opciones describe correctamente un bucle con condición de salida al final (como 'Repetir - Hasta Que')?", respuestas: [{texto: "Ejecuta las instrucciones al menos una vez antes de evaluar la condición", correcta: true}, {texto: "Nunca ejecuta las instrucciones si la condición es verdadera", correcta: false}, {texto: "Solo funciona con números decimales", correcta: false}, {texto: "Requiere obligatoriamente un archivo externo", correcta: false}] },
+            { enunciado: "Cuando una función recibe datos desde el algoritmo principal para poder trabajar con ellos, ¿cómo se llaman esos datos?", respuestas: [{texto: "Parámetros o Argumentos", correcta: true}, {texto: "Errores de sintaxis", correcta: false}, {texto: "Constantes fijas", correcta: false}, {texto: "Comentarios", correcta: false}] },
+            { enunciado: "¿Qué palabra clave utiliza PSeInt para devolver un resultado final desde una función creada por el usuario?", respuestas: [{texto: "Retornar", correcta: true}, {texto: "Imprimir", correcta: false}, {texto: "Leer", correcta: false}, {texto: "Dimensionar", correcta: false}] },
+            { enunciado: "Si declaramos una variable dentro de una función, ¿puede ser leída directamente por el Algoritmo principal?", respuestas: [{texto: "No, las variables declaradas dentro de funciones suelen ser locales", correcta: true}, {texto: "Sí, siempre está disponible en todo el programa", correcta: false}, {texto: "Depende de la marca del computador", correcta: false}, {texto: "Solo si se usa la instrucción Borrar", correcta: false}] },
+            { enunciado: "¿Cuál es el propósito de los comentarios (líneas que empiezan con //) en un código de PSeInt?", respuestas: [{texto: "Explicar el código para que otros humanos lo entiendan sin afectar la ejecución", correcta: true}, {texto: "Hacer que el programa corra el doble de rápido", correcta: false}, {texto: "Ocultar errores graves de sintaxis", correcta: false}, {texto: "Guardar contraseñas de seguridad", correcta: false}] }
+        ],
+        v2: [
+            { enunciado: "¿Qué estructura repetitiva se debe utilizar cuando SÍ sabemos de antemano cuántas veces se va a repetir un bloque de código?", respuestas: [{texto: "Bucle Para", correcta: true}, {texto: "Bucle Mientras", correcta: false}, {texto: "Condicional Si-Entonces", correcta: false}, {texto: "Función Principal", correcta: false}] },
+            { enunciado: "En el Bucle 'Para', ¿qué elemento gestiona de manera automática la variable de control?", respuestas: [{texto: "La creación, revisión e incremento automático", correcta: true}, {texto: "El usuario por teclado", correcta: false}, {texto: "Únicamente el sistema operativo", correcta: false}, {texto: "El comando Borrar Pantalla", correcta: false}] },
+            { enunciado: "En PSeInt, ¿cuál es la función principal de un 'Contador'?", respuestas: [{texto: "Contar sucesos o vueltas aumentando por un valor fijo (ej. de 1 en 1)", correcta: true}, {texto: "Sumar precios de un carrito de compras", correcta: false}, {texto: "Almacenar textos largos o nombres", correcta: false}, {texto: "Detener por completo la computadora", correcta: false}] },
+            { enunciado: "Analiza la fórmula: contador = contador + 1. ¿Qué realiza primero la computadora antes de guardar el resultado?", respuestas: [{texto: "Resuelve la operación de la derecha (toma el valor viejo y le suma 1)", correcta: true}, {texto: "Guarda el valor de la izquierda", correcta: false}, {texto: "Borra todas las variables del programa", correcta: false}, {texto: "Pregunta la edad al usuario", correcta: false}] },
+            { enunciado: "¿Qué ocurre si en un bucle 'Mientras' olvidamos incluir la instrucción que modifica la variable de control?", respuestas: [{texto: "Se produce un Bucle Infinito que bloquea el programa", correcta: true}, {texto: "El programa se ejecuta una sola vez y termina", correcta: false}, {texto: "La computadora se reinicia automáticamente", correcta: false}, {texto: "Se imprime la tabla del 7", correcta: false}] },
+            { enunciado: "¿Cuál es la diferencia principal entre el Bucle 'Mientras' y el Bucle 'Para'?", respuestas: [{texto: "El Mientras se usa cuando no sabes cuándo termina; el Para cuando sabes la cantidad exacta", correcta: true}, {texto: "No existe ninguna diferencia, son exactamente iguales", correcta: false}, {texto: "El Para solo acepta números negativos", correcta: false}, {texto: "El Mientras no requiere condición", correcta: false}] },
+            { enunciado: "Si queremos simular una cuenta regresiva desde 10 hasta 1 en un bucle 'Para', ¿cómo debe configurarse el paso?", respuestas: [{texto: "Con Paso -1", correcta: true}, {texto: "Con Paso 1", correcta: false}, {texto: "Con Paso 0", correcta: false}, {texto: "Con Paso 10", correcta: false}] },
+            { enunciado: "¿Qué es la Programación Modular (el principio de 'Divide y Vencerás')?", respuestas: [{texto: "Romper un problema grande en piezas más pequeñas, independientes y específicas llamadas Funciones", correcta: true}, {texto: "Escribir todo el código en una sola línea", correcta: false}, {texto: "Dividir números entre cero", correcta: false}, {texto: "Multiplicar variables de texto", correcta: false}] },
+            { enunciado: "¿Qué beneficio principal aporta dividir un programa en módulos o funciones?", respuestas: [{texto: "Facilita la corrección de errores y mejora la legibilidad", correcta: true}, {texto: "Duplica el código innecesariamente", correcta: false}, {texto: "Hace que el programa sea mucho más lento", correcta: false}, {texto: "Elimina la necesidad de usar variables", correcta: false}] },
+            { enunciado: "En PSeInt, ¿dónde se deben crear o definir las Funciones personalizadas?", respuestas: [{texto: "Fuera del Algoritmo principal (generalmente arriba o abajo)", correcta: true}, {texto: "Adentro del Algoritmo principal exclusivamente", correcta: false}, {texto: "En un archivo de audio externo", correcta: false}, {texto: "En la barra de tareas de Windows", correcta: false}] },
+            { enunciado: "¿Qué significa 'Llamar' o 'Invocar' a una función?", respuestas: [{texto: "Escribir su nombre en el algoritmo principal para que despierte y ejecute sus instrucciones", correcta: true}, {texto: "Enviar un mensaje de texto al celular del profesor", correcta: false}, {texto: "Borrar la función del disco duro", correcta: false}, {texto: "Cambiarle el color a la consola", correcta: false}] },
+            { enunciado: "Si un programa utiliza un Acumulador (ej. total = total + precio), ¿qué analogía representa mejor su funcionamiento?", respuestas: [{texto: "El carrito de compras del supermercado que suma precios distintos", correcta: true}, {texto: "Una cuenta en la puerta de un evento que cuenta personas de 1 en 1", correcta: false}, {texto: "Un semáforo en rojo", correcta: false}, {texto: "Una contraseña secreta", correcta: false}] },
+            { enunciado: "Observa la siguiente línea: Para i = 1 Hasta 5 Con Paso 1 Hacer. ¿Cuántas veces se ejecutará el bloque interno?", respuestas: [{texto: "5 veces", correcta: true}, {texto: "1 vez", correcta: false}, {texto: "4 veces", correcta: false}, {texto: "Infinitas veces", correcta: false}] },
+            { enunciado: "¿Qué utilidad tiene la instrucción 'Dimension' en PSeInt cuando manejamos arreglos o vectores?", respuestas: [{texto: "Reservar un número exacto de casillas en la memoria RAM", correcta: true}, {texto: "Cambiar el diseño y color de la pantalla", correcta: false}, {texto: "Imprimir gráficos en 3D", correcta: false}, {texto: "Aumentar la velocidad del procesador", correcta: false}] },
+            { enunciado: "En un arreglo, ¿cómo se le llama al número que indica la posición exacta de un elemento dentro de la lista?", respuestas: [{texto: "Índice", correcta: true}, {texto: "Variable global", correcta: false}, {texto: "Contador lógico", correcta: false}, {texto: "Subrutina", correcta: false}] },
+            { enunciado: "¿Cuál de las siguientes opciones describe correctamente un bucle con condición de salida al final (como 'Repetir - Hasta Que')?", respuestas: [{texto: "Ejecuta las instrucciones al menos una vez antes de evaluar la condición", correcta: true}, {texto: "Nunca ejecuta las instrucciones si la condición es verdadera", correcta: false}, {texto: "Solo funciona con números decimales", correcta: false}, {texto: "Requiere obligatoriamente un archivo externo", correcta: false}] },
+            { enunciado: "Cuando una función recibe datos desde el algoritmo principal para poder trabajar con ellos, ¿cómo se llaman esos datos?", respuestas: [{texto: "Parámetros o Argumentos", correcta: true}, {texto: "Errores de sintaxis", correcta: false}, {texto: "Constantes fijas", correcta: false}, {texto: "Comentarios", correcta: false}] },
+            { enunciado: "¿Qué palabra clave utiliza PSeInt para devolver un resultado final desde una función creada por el usuario?", respuestas: [{texto: "Retornar", correcta: true}, {texto: "Imprimir", correcta: false}, {texto: "Leer", correcta: false}, {texto: "Dimensionar", correcta: false}] },
+            { enunciado: "Si declaramos una variable dentro de una función, ¿puede ser leída directamente por el Algoritmo principal?", respuestas: [{texto: "No, las variables declaradas dentro de funciones suelen ser locales", correcta: true}, {texto: "Sí, siempre está disponible en todo el programa", correcta: false}, {texto: "Depende de la marca del computador", correcta: false}, {texto: "Solo si se usa la instrucción Borrar", correcta: false}] },
+            { enunciado: "¿Cuál es el propósito de los comentarios (líneas que empiezan con //) en un código de PSeInt?", respuestas: [{texto: "Explicar el código para que otros humanos lo entiendan sin afectar la ejecución", correcta: true}, {texto: "Hacer que el programa corra el doble de rápido", correcta: false}, {texto: "Ocultar errores graves de sintaxis", correcta: false}, {texto: "Guardar contraseñas de seguridad", correcta: false}] }
+        ],
+        v3: [
+            { enunciado: "¿Qué estructura repetitiva se debe utilizar cuando SÍ sabemos de antemano cuántas veces se va a repetir un bloque de código?", respuestas: [{texto: "Bucle Para", correcta: true}, {texto: "Bucle Mientras", correcta: false}, {texto: "Condicional Si-Entonces", correcta: false}, {texto: "Función Principal", correcta: false}] },
+            { enunciado: "En el Bucle 'Para', ¿qué elemento gestiona de manera automática la variable de control?", respuestas: [{texto: "La creación, revisión e incremento automático", correcta: true}, {texto: "El usuario por teclado", correcta: false}, {texto: "Únicamente el sistema operativo", correcta: false}, {texto: "El comando Borrar Pantalla", correcta: false}] },
+            { enunciado: "En PSeInt, ¿cuál es la función principal de un 'Contador'?", respuestas: [{texto: "Contar sucesos o vueltas aumentando por un valor fijo (ej. de 1 en 1)", correcta: true}, {texto: "Sumar precios de un carrito de compras", correcta: false}, {texto: "Almacenar textos largos o nombres", correcta: false}, {texto: "Detener por completo la computadora", correcta: false}] },
+            { enunciado: "Analiza la fórmula: contador = contador + 1. ¿Qué realiza primero la computadora antes de guardar el resultado?", respuestas: [{texto: "Resuelve la operación de la derecha (toma el valor viejo y le suma 1)", correcta: true}, {texto: "Guarda el valor de la izquierda", correcta: false}, {texto: "Borra todas las variables del programa", correcta: false}, {texto: "Pregunta la edad al usuario", correcta: false}] },
+            { enunciado: "¿Qué ocurre si en un bucle 'Mientras' olvidamos incluir la instrucción que modifica la variable de control?", respuestas: [{texto: "Se produce un Bucle Infinito que bloquea el programa", correcta: true}, {texto: "El programa se ejecuta una sola vez y termina", correcta: false}, {texto: "La computadora se reinicia automáticamente", correcta: false}, {texto: "Se imprime la tabla del 7", correcta: false}] },
+            { enunciado: "¿Cuál es la diferencia principal entre el Bucle 'Mientras' y el Bucle 'Para'?", respuestas: [{texto: "El Mientras se usa cuando no sabes cuándo termina; el Para cuando sabes la cantidad exacta", correcta: true}, {texto: "No existe ninguna diferencia, son exactamente iguales", correcta: false}, {texto: "El Para solo acepta números negativos", correcta: false}, {texto: "El Mientras no requiere condición", correcta: false}] },
+            { enunciado: "Si queremos simular una cuenta regresiva desde 10 hasta 1 en un bucle 'Para', ¿cómo debe configurarse el paso?", respuestas: [{texto: "Con Paso -1", correcta: true}, {texto: "Con Paso 1", correcta: false}, {texto: "Con Paso 0", correcta: false}, {texto: "Con Paso 10", correcta: false}] },
+            { enunciado: "¿Qué es la Programación Modular (el principio de 'Divide y Vencerás')?", respuestas: [{texto: "Romper un problema grande en piezas más pequeñas, independientes y específicas llamadas Funciones", correcta: true}, {texto: "Escribir todo el código en una sola línea", correcta: false}, {texto: "Dividir números entre cero", correcta: false}, {texto: "Multiplicar variables de texto", correcta: false}] },
+            { enunciado: "¿Qué beneficio principal aporta dividir un programa en módulos o funciones?", respuestas: [{texto: "Facilita la corrección de errores y mejora la legibilidad", correcta: true}, {texto: "Duplica el código innecesariamente", correcta: false}, {texto: "Hace que el programa sea mucho más lento", correcta: false}, {texto: "Elimina la necesidad de usar variables", correcta: false}] },
+            { enunciado: "En PSeInt, ¿dónde se deben crear o definir las Funciones personalizadas?", respuestas: [{texto: "Fuera del Algoritmo principal (generalmente arriba o abajo)", correcta: true}, {texto: "Adentro del Algoritmo principal exclusivamente", correcta: false}, {texto: "En un archivo de audio externo", correcta: false}, {texto: "En la barra de tareas de Windows", correcta: false}] },
+            { enunciado: "¿Qué significa 'Llamar' o 'Invocar' a una función?", respuestas: [{texto: "Escribir su nombre en el algoritmo principal para que despierte y ejecute sus instrucciones", correcta: true}, {texto: "Enviar un mensaje de texto al celular del profesor", correcta: false}, {texto: "Borrar la función del disco duro", correcta: false}, {texto: "Cambiarle el color a la consola", correcta: false}] },
+            { enunciado: "Si un programa utiliza un Acumulador (ej. total = total + precio), ¿qué analogía representa mejor su funcionamiento?", respuestas: [{texto: "El carrito de compras del supermercado que suma precios distintos", correcta: true}, {texto: "Una cuenta en la puerta de un evento que cuenta personas de 1 en 1", correcta: false}, {texto: "Un semáforo en rojo", correcta: false}, {texto: "Una contraseña secreta", correcta: false}] },
+            { enunciado: "Observa la siguiente línea: Para i = 1 Hasta 5 Con Paso 1 Hacer. ¿Cuántas veces se ejecutará el bloque interno?", respuestas: [{texto: "5 veces", correcta: true}, {texto: "1 vez", correcta: false}, {texto: "4 veces", correcta: false}, {texto: "Infinitas veces", correcta: false}] },
+            { enunciado: "¿Qué utilidad tiene la instrucción 'Dimension' en PSeInt cuando manejamos arreglos o vectores?", respuestas: [{texto: "Reservar un número exacto de casillas en la memoria RAM", correcta: true}, {texto: "Cambiar el diseño y color de la pantalla", correcta: false}, {texto: "Imprimir gráficos en 3D", correcta: false}, {texto: "Aumentar la velocidad del procesador", correcta: false}] },
+            { enunciado: "En un arreglo, ¿cómo se le llama al número que indica la posición exacta de un elemento dentro de la lista?", respuestas: [{texto: "Índice", correcta: true}, {texto: "Variable global", correcta: false}, {texto: "Contador lógico", correcta: false}, {texto: "Subrutina", correcta: false}] },
+            { enunciado: "¿Cuál de las siguientes opciones describe correctamente un bucle con condición de salida al final (como 'Repetir - Hasta Que')?", respuestas: [{texto: "Ejecuta las instrucciones al menos una vez antes de evaluar la condición", correcta: true}, {texto: "Nunca ejecuta las instrucciones si la condición es verdadera", correcta: false}, {texto: "Solo funciona con números decimales", correcta: false}, {texto: "Requiere obligatoriamente un archivo externo", correcta: false}] },
+            { enunciado: "Cuando una función recibe datos desde el algoritmo principal para poder trabajar con ellos, ¿cómo se llaman esos datos?", respuestas: [{texto: "Parámetros o Argumentos", correcta: true}, {texto: "Errores de sintaxis", correcta: false}, {texto: "Constantes fijas", correcta: false}, {texto: "Comentarios", correcta: false}] },
+            { enunciado: "¿Qué palabra clave utiliza PSeInt para devolver un resultado final desde una función creada por el usuario?", respuestas: [{texto: "Retornar", correcta: true}, {texto: "Imprimir", correcta: false}, {texto: "Leer", correcta: false}, {texto: "Dimensionar", correcta: false}] },
+            { enunciado: "Si declaramos una variable dentro de una función, ¿puede ser leída directamente por el Algoritmo principal?", respuestas: [{texto: "No, las variables declaradas dentro de funciones suelen ser locales", correcta: true}, {texto: "Sí, siempre está disponible en todo el programa", correcta: false}, {texto: "Depende de la marca del computador", correcta: false}, {texto: "Solo si se usa la instrucción Borrar", correcta: false}] },
+            { enunciado: "¿Cuál es el propósito de los comentarios (líneas que empiezan con //) en un código de PSeInt?", respuestas: [{texto: "Explicar el código para que otros humanos lo entiendan sin afectar la ejecución", correcta: true}, {texto: "Hacer que el programa corra el doble de rápido", correcta: false}, {texto: "Ocultar errores graves de sintaxis", correcta: false}, {texto: "Guardar contraseñas de seguridad", correcta: false}] }
+        ]
+    };
+
+    const practicasPorVersion = {
+        v_septimo: [
+            { titulo: "Variante Gobstones 1 (El final del pasillo):", texto: "Escribe un programa en Gobstones que utilice un bucle 'repetir' combinado con un procedimiento con parámetros para desplazar al robot Lucho y colocar bolitas rojas en un pasillo de longitud variable.", emulador: "https://gobstones.github.io/gobstones-client/" },
+            { titulo: "Variante Gobstones 2 (Candela, me quemo):", texto: "Escribe un procedimiento parametrizado en Gobstones que permita combinar un bucle y el uso del comando para apagar fuego o colocar marcas en celdas consecutivas de un tablero rectangular.", emulador: "https://gobstones.github.io/gobstones-client/" },
+            { titulo: "Variante Gobstones 3 (El planeta de Nano):", texto: "Diseña un programa en Gobstones utilizando repeticiones anidadas y procedimientos con parámetros de color y cantidad para recorrer las filas del planeta de Nano y recolectar elementos.", emulador: "https://gobstones.github.io/gobstones-client/" }
+        ],
+        v1: [
+            { titulo: "Variante A (Noveno - Bucle Para):", texto: "Escribe un programa en PSeInt llamado 'TablaDelSeis' que utilice un bucle 'Para' para generar la tabla del 6 (del 1 al 5). Formato de salida: '6 x 1 = 6'.", emulador: "https://pseint-web.app/" },
+            { titulo: "Variante B (Noveno - Condicionales):", texto: "Escribe un programa que pida la nota de un estudiante y mediante un 'Si-Entonces' imprima 'Aprobado' si es mayor o igual a 3.0, o 'Reprobado' en caso contrario.", emulador: "https://pseint-web.app/" },
+            { titulo: "Variante C (Noveno - Operadores):", texto: "Diseña un algoritmo que solicite dos números enteros y muestre en pantalla la suma, la resta, la multiplicación y la división de ambos.", emulador: "https://pseint-web.app/" }
+        ],
+        v2: [
+            { titulo: "Variante A (Décimo - Bucle Mientras):", texto: "Escribe un programa que use un bucle 'Mientras' para simular el llenado de un tanque de agua. Empieza en 0 litros, en cada bombeo sube +2 litros hasta llegar a 10. Muestra el estado en cada vuelta.", emulador: "https://pseint-web.app/" },
+            { titulo: "Variante B (Décimo - Acumulador):", texto: "Crea un algoritmo que pida el precio de 4 productos usando un bucle 'Para', los vaya sumando en un acumulador y al final imprima el valor total a pagar.", emulador: "https://pseint-web.app/" },
+            { titulo: "Variante C (Décimo - Validación):", texto: "Diseña un programa que solicite una contraseña numérica y repita la solicitud mediante un bucle hasta que el usuario escriba la clave correcta '2026'.", emulador: "https://pseint-web.app/" }
+        ],
+        v3: [
+            { titulo: "Pregunta 1 (Undécimo - Diseño de Funciones):", texto: "Escribe el código completo en PSeInt de una función llamada MostrarVictoria que imprima un cartel decorativo con el texto ¡Nivel Superado! y redacta el algoritmo principal que permita invocarla correctamente.", emulador: "https://pseint-web.app/" },
+            { titulo: "Pregunta 2 (Undécimo - Modularidad y Múltiples Funciones):", texto: "Diseña un programa en PSeInt que cumpla con los siguientes requisitos: Crea una función llamada MenuTienda que despliegue al menos tres opciones de compra. Crea una segunda función independiente llamada DespedidaTienda que muestre un mensaje de agradecimiento. Escribe el Algoritmo principal que ejecute ambas funciones en el orden adecuado.", emulador: "https://pseint-web.app/" },
+            { titulo: "Pregunta 3 (Undécimo - Funciones con Bucles):", texto: "Escribe una función en PSeInt llamada TablaDelCinco que utilice un bucle Para para generar e imprimir automáticamente la tabla de multiplicar del número 5 (desde el 1 hasta el 10). No olvides incluir su respectivo algoritmo principal para llamarla.", emulador: "https://pseint-web.app/" }
+        ]
+    };
+
+    let vecesSalioPantalla = 0;
+    let paginaActual = 1;
+    const totalPaginas = 12;
+    let preguntasGeneradasExamen = [];
+    let varianteSeleccionadaGlobal = null;
+
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden && paginaActual > 1 && paginaActual < 12) {
+            vecesSalioPantalla++;
+            let aviso = document.getElementById('warningFoco');
+            aviso.style.display = 'block';
+            setTimeout(() => { aviso.style.display = 'none'; }, 6000);
+        }
+    });
+
+    function buscarEstudiante() {
+        let doc = document.getElementById('documento').value.trim();
+        let nombreInput = document.getElementById('nombre');
+        let gradoInput = document.getElementById('grado');
+        let versionInput = document.getElementById('version');
+        let btnComenzar = document.getElementById('btnComenzar');
+        let errorDoc = document.getElementById('errorDoc');
+
+        let intentosPrevios = JSON.parse(localStorage.getItem('intentosPSeInt') || '[]');
+        if (intentosPrevios.includes(doc)) {
+            errorDoc.style.color = "#c0392b";
+            errorDoc.innerText = "❌ Este documento ya registró un intento de examen y se encuentra bloqueado.";
+            nombreInput.value = "";
+            gradoInput.value = "";
+            btnComenzar.disabled = true;
+            btnComenzar.style.opacity = "0.6";
+            btnComenzar.style.cursor = "not-allowed";
+            return;
+        }
+
+        if (baseDatosEstudiantes[doc]) {
+            let est = baseDatosEstudiantes[doc];
+            nombreInput.value = est.nombre;
+            gradoInput.value = est.grado;
+            versionInput.value = est.version; 
+            errorDoc.style.color = "#27ae60";
+            errorDoc.innerText = `✅ Estudiante verificado (${est.grado}).`;
+            btnComenzar.disabled = false;
+            btnComenzar.style.opacity = "1";
+            btnComenzar.style.cursor = "pointer";
+        } else {
+            nombreInput.value = "";
+            gradoInput.value = "";
+            errorDoc.style.color = "#c0392b";
+            errorDoc.innerText = "❌ Documento no encontrado en las listas oficiales.";
+            btnComenzar.disabled = true;
+            btnComenzar.style.opacity = "0.6";
+            btnComenzar.style.cursor = "not-allowed";
+        }
+    }
+
+    function iniciarExamen() {
+        let versionGrado = document.getElementById('version').value;
+        let opcionesGrado = practicasPorVersion[versionGrado];
+        let indiceAleatorio = Math.floor(Math.random() * opcionesGrado.length);
+        varianteSeleccionadaGlobal = opcionesGrado[indiceAleatorio];
+
+        let textoVariante = `${varianteSeleccionadaGlobal.titulo} ${varianteSeleccionadaGlobal.texto}`;
+        document.getElementById('textoVariantePractica').value = textoVariante;
+        document.getElementById('enunciadoPractica').innerHTML = `<strong>${varianteSeleccionadaGlobal.titulo}</strong><br>${varianteSeleccionadaGlobal.texto}`;
+        document.getElementById('iframeEmulador').src = varianteSeleccionadaGlobal.emulador;
+
+        construirPaginasPreguntas(versionGrado);
+        cambiarPagina(1);
+    }
+
+    function construirPaginasPreguntas(versionGrado) {
+        let container = document.getElementById('paginasPreguntasContainer');
+        let htmlTotal = "";
+        let bancoOriginal = bancosPorVersion[versionGrado] || bancosPorVersion['v1'];
+        
+        preguntasGeneradasExamen = [...bancoOriginal].sort(() => Math.random() - 0.5);
+
+        let numPreguntaGlobal = 1;
+        for (let p = 0; p < preguntasGeneradasExamen.length; p += 2) {
+            let paginaNro = (p / 2) + 2; 
+            let q1 = preguntasGeneradasExamen[p];
+            let q2 = preguntasGeneradasExamen[p+1];
+
+            let resp1 = [...q1.respuestas].sort(() => Math.random() - 0.5);
+            let resp2 = [...q2.respuestas].sort(() => Math.random() - 0.5);
+
+            htmlTotal += `
+                <div class="page-section" id="page-${paginaNro}">
+                    <div class="page-indicator">Página ${paginaNro} de 12 (Evaluación Teórica)</div>
+                    
+                    <div class="question-card" data-qid="${numPreguntaGlobal}">
+                        <div class="question-title">Pregunta ${numPreguntaGlobal}: ${q1.enunciado}</div>
+                        <div class="options">
+            `;
+            resp1.forEach(r => {
+                htmlTotal += `<label><input type="radio" name="p_${numPreguntaGlobal}" value="${r.correcta}"> ${r.texto}</label>`;
+            });
+            htmlTotal += `</div></div>`;
+            numPreguntaGlobal++;
+
+            htmlTotal += `
+                    <div class="question-card" data-qid="${numPreguntaGlobal}">
+                        <div class="question-title">Pregunta ${numPreguntaGlobal}: ${q2.enunciado}</div>
+                        <div class="options">
+            `;
+            resp2.forEach(r => {
+                htmlTotal += `<label><input type="radio" name="p_${numPreguntaGlobal}" value="${r.correcta}"> ${r.texto}</label>`;
+            });
+            htmlTotal += `</div></div>`;
+            numPreguntaGlobal++;
+
+            htmlTotal += `
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="cambiarPagina(-1)">⬅ Anterior</button>
+                        <button type="button" class="btn" onclick="cambiarPagina(1)">Siguiente ➔</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = htmlTotal;
+    }
+
+    function cambiarPagina(direccion) {
+        let actualEl = document.getElementById(`page-${paginaActual}`);
+        
+        if (direccion > 0) {
+            if (paginaActual === 1 && document.getElementById('documento').value.trim() === "") {
+                alert("Por favor ingrese su documento.");
+                return;
+            }
+        }
+
+        let nuevaPagina = paginaActual + direccion;
+        if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+            actualEl.classList.remove('active');
+            paginaActual = nuevaPagina;
+            document.getElementById(`page-${paginaActual}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function toggleEmulador() {
+        let emu = document.getElementById('contenedorEmulador');
+        emu.style.display = emu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function calificarExamen() {
+        let doc = document.getElementById('documento').value.trim();
+        let nombre = document.getElementById('nombre').value;
+        let grado = document.getElementById('grado').value;
+        let version = document.getElementById('version').value;
+        let codigo = document.getElementById('codigoPractica').value.trim();
+        let varianteTexto = document.getElementById('textoVariantePractica').value || (varianteSeleccionadaGlobal ? varianteSeleccionadaGlobal.titulo + " " + varianteSeleccionadaGlobal.texto : "No asignada");
+
+        let aciertos = 0;
+        let detalleRespuestas = [];
+        
+        for (let i = 1; i <= 20; i++) {
+            let radios = document.getElementsByName(`p_${i}`);
+            let respondidaCorrecta = false;
+            let textoSeleccionado = "No respondida";
+            let textoCorrecta = "";
+
+            for (let r of radios) {
+                if (r.value === "true") {
+                    textoCorrecta = r.parentElement.innerText.trim();
+                }
+                if (r.checked) {
+                    textoSeleccionado = r.parentElement.innerText.trim();
+                    if (r.value === "true") {
+                        respondidaCorrecta = true;
+                    }
+                }
+            }
+
+            if (respondidaCorrecta) aciertos++;
+            let preguntaObj = preguntasGeneradasExamen[i - 1];
+            detalleRespuestas.push({
+                nro: i,
+                pregunta: preguntaObj ? preguntaObj.enunciado : `Pregunta ${i}`,
+                alumno: textoSeleccionado,
+                correcta: textoCorrecta,
+                estado: respondidaCorrecta ? "CORRECTA" : "INCORRECTA"
+            });
+        }
+
+        let penalizacionFoco = vecesSalioPantalla * 0.5;
+        let notaTeoriaBase = (aciertos / 20) * 5.0;
+        let notaTeoriaFinal = Math.max(0, notaTeoriaBase - penalizacionFoco).toFixed(1);
+
+        let resultadoFinal = {
+            doc: doc,
+            nombre: nombre,
+            grado: grado,
+            version: version,
+            variantePractica: varianteTexto,
+            aciertos: aciertos,
+            vecesSalioPantalla: vecesSalioPantalla,
+            penalizacionFoco: penalizacionFoco,
+            notaTeoria: notaTeoriaFinal,
+            codigo: codigo,
+            fecha: new Date().toLocaleString(),
+            detalle: detalleRespuestas
+        };
+
+        let intentos = JSON.parse(localStorage.getItem('intentosPSeInt') || '[]');
+        if (!intentos.includes(doc)) {
+            intentos.push(doc);
+            localStorage.setItem('intentosPSeInt', JSON.stringify(intentos));
+        }
+
+        let resultados = JSON.parse(localStorage.getItem('resultadosPSeInt') || '[]');
+        resultados = resultados.filter(r => r.doc !== doc);
+        resultados.push(resultadoFinal);
+        localStorage.setItem('resultadosPSeInt', JSON.stringify(resultados));
+
+        if (urlGoogleScript) {
+            fetch(urlGoogleScript, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(resultadoFinal)
+            }).catch(error => console.error("Error al enviar a la nube:", error));
+        }
+
+        document.getElementById('quizForm').style.display = 'none';
+        let resDiv = document.getElementById('results');
+        resDiv.style.display = 'block';
+        document.getElementById('scoreText').innerHTML = `
+            Estudiante: ${nombre}<br>
+            Aciertos Teóricos: ${aciertos} / 20<br>
+            Nota Teórica Preliminar: ${notaTeoriaFinal} / 5.0<br>
+            <span style="font-size: 14px; color: #555;">(Evaluación guardada localmente y enviada a la nube)</span>
+        `;
+    }
+
+    function terminarIntento() {
+        alert("Evaluación finalizada con éxito. Puede cerrar esta ventana.");
+        location.reload();
+    }
+
+    function abrirPanelAdmin() {
+        let panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('adminCedula').value = "";
+        document.getElementById('adminContenido').style.display = 'none';
+        document.getElementById('loginAdminSection').style.display = 'block';
+    }
+
+    function verificarAdmin() {
+        let cedula = document.getElementById('adminCedula').value.trim();
+        if (cedula === cedulaProfesor) {
+            document.getElementById('loginAdminSection').style.display = 'none';
+            document.getElementById('adminContenido').style.display = 'block';
+            document.getElementById('adminCedula').value = "";
+            actualizarListaIntentosLocal();
+        } else {
+            alert("Cédula de profesor incorrecta.");
+            document.getElementById('adminCedula').value = "";
+        }
+    }
+
+    function cerrarSesionAdmin() {
+        document.getElementById('adminCedula').value = "";
+        document.getElementById('adminContenido').style.display = 'none';
+        document.getElementById('loginAdminSection').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    function actualizarListaIntentosLocal() {
+        let intentos = JSON.parse(localStorage.getItem('intentosPSeInt') || '[]');
+        let div = document.getElementById('listaIntentos');
+        document.getElementById('tituloListaEstudiantes').innerText = "Estudiantes con intento registrado (Memoria Local de este PC):";
+        
+        if (intentos.length === 0) {
+            div.innerHTML = "No hay registros locales en este equipo. Usa el botón 'Sincronizar y Ver desde la Nube' para consultar todos los exámenes de Google Sheets.";
+        } else {
+            let html = "";
+            intentos.forEach(doc => {
+                let estInfo = baseDatosEstudiantes[doc];
+                let infoTexto = estInfo ? `${estInfo.nombre} - ${estInfo.grado} (Doc: ${doc})` : `Documento: ${doc}`;
+                html += `
+                    <div class="student-row">
+                        <span>👤 ${infoTexto}</span>
+                        <div style="display: flex; gap: 5px;">
+                            <button type="button" class="btn-download-ind" onclick="descargarEvaluacionIndividualLocal('${doc}')">📥 Descargar Examen</button>
+                            <button type="button" class="btn-delete" onclick="eliminarBloqueoLocal('${doc}')">🗑️ Eliminar Bloqueo</button>
+                        </div>
+                    </div>
+                `;
+            });
+            div.innerHTML = html;
+        }
+    }
+
+    function sincronizarDesdeNube() {
+        let div = document.getElementById('listaIntentos');
+        document.getElementById('tituloListaEstudiantes').innerText = "☁️ Estudiantes sincronizados desde Google Sheets (Nube):";
+        div.innerHTML = "🔄 Consultando registros en la nube, por favor espere...";
+
+        fetch(urlGoogleScript)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || data.length === 0) {
+                    div.innerHTML = "No hay exámenes registrados aún en Google Sheets.";
+                    return;
+                }
+
+                window.datosNubeCache = data;
+
+                let html = "";
+                data.forEach((res, index) => {
+                    html += `
+                        <div class="student-row">
+                            <span>👤 ${res.nombre || 'Sin Nombre'} - ${res.grado || 'Sin Grado'} (Doc: ${res.doc}) [Nota: ${res.notaTeoria}]</span>
+                            <div style="display: flex; gap: 5px;">
+                                <button type="button" class="btn-download-ind" onclick="descargarEvaluacionNube(${index})">📥 Descargar Examen (.txt)</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                div.innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Error al sincronizar:", error);
+                div.innerHTML = "❌ Error al conectar con Google Sheets. Verifique su conexión a internet.";
+            });
+    }
+
+    function descargarEvaluacionNube(index) {
+        let res = window.datosNubeCache[index];
+        if (!res) return;
+
+        let contenido = "COLEGIO PEDAGÓGICO EMMANUEL\n";
+        contenido += "REPORTE DE EVALUACIÓN FINAL (Nube)\n";
+        contenido += "----------------------------------------\n";
+        contenido += "Estudiante: " + res.nombre + "\n";
+        contenido += "Documento: " + res.doc + "\n";
+        contenido += "Grado: " + res.grado + "\n";
+        contenido += "Nivel Examen: " + res.version + "\n";
+        contenido += "Fecha: " + res.fecha + "\n";
+        contenido += "Aciertos Teóricos: " + res.aciertos + " / 20\n";
+        contenido += "Salidas de pantalla detectadas: " + res.vecesSalioPantalla + "\n";
+        contenido += "Nota Teoría Final: " + res.notaTeoria + " / 5.0\n";
+        contenido += "----------------------------------------\n\n";
+        contenido += "ENUNCIADO ASIGNADO (PUNTO 21 - PRÁCTICO):\n" + res.variantePractica + "\n\n";
+        contenido += "----------------------------------------\n";
+        contenido += "CÓDIGO ENTREGADO POR EL ALUMNO (PUNTO 21):\n" + res.codigo + "\n\n";
+        contenido += "----------------------------------------\n";
+        contenido += "DETALLE DE RESPUESTAS TEÓRICAS:\n";
+        contenido += res.detalleTexto || "(Detalle no disponible)";
+
+        let blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Examen_" + res.doc + "_" + res.nombre.replace(/\s+/g, '_') + ".txt";
+        link.click();
+    }
+
+    function eliminarBloqueoLocal(doc) {
+        let intentos = JSON.parse(localStorage.getItem('intentosPSeInt') || '[]');
+        intentos = intentos.filter(d => d !== doc);
+        localStorage.setItem('intentosPSeInt', JSON.stringify(intentos));
+        
+        let resultados = JSON.parse(localStorage.getItem('resultadosPSeInt') || '[]');
+        resultados = resultados.filter(r => r.doc !== doc);
+        localStorage.setItem('resultadosPSeInt', JSON.stringify(resultados));
+
+        actualizarListaIntentosLocal();
+    }
+
+    function limpiarIntentos() {
+        if (confirm("¿Está seguro de borrar todos los registros locales de este equipo?")) {
+            localStorage.removeItem('intentosPSeInt');
+            localStorage.removeItem('resultadosPSeInt');
+            actualizarListaIntentosLocal();
+            alert("¡Registros locales borrados!");
+        }
+    }
+
+    function descargarEvaluacionIndividualLocal(doc) {
+        let resultadosGuardados = JSON.parse(localStorage.getItem('resultadosPSeInt') || '[]');
+        let res = resultadosGuardados.find(r => r.doc === doc);
+
+        if (!res) {
+            alert("No se encontró el examen detallado de este estudiante en este equipo.");
+            return;
+        }
+
+        let contenido = "COLEGIO PEDAGÓGICO EMMANUEL\n";
+        contenido += "REPORTE DE EVALUACIÓN FINAL\n";
+        contenido += "----------------------------------------\n";
+        contenido += "Estudiante: " + res.nombre + "\n";
+        contenido += "Documento: " + res.doc + "\n";
+        contenido += "Grado: " + res.grado + "\n";
+        contenido += "Nivel Examen: " + res.version + "\n";
+        contenido += "Fecha: " + res.fecha + "\n";
+        contenido += "Aciertos Teóricos: " + res.aciertos + " / 20\n";
+        contenido += "Salidas de pantalla detectadas: " + res.vecesSalioPantalla + " (Penalización: -" + res.penalizacionFoco + ")\n";
+        contenido += "Nota Teoría Final: " + res.notaTeoria + " / 5.0\n";
+        contenido += "----------------------------------------\n\n";
+        contenido += "ENUNCIADO ASIGNADO (PUNTO 21 - PRÁCTICO):\n" + res.variantePractica + "\n\n";
+        contenido += "----------------------------------------\n";
+        contenido += "CÓDIGO ENTREGADO POR EL ALUMNO (PUNTO 21):\n" + res.codigo + "\n\n";
+        contenido += "----------------------------------------\n";
+        contenido += "DETALLE DE RESPUESTAS TEÓRICAS:\n";
+        
+        if (res.detalle && res.detalle.length > 0) {
+            res.detalle.forEach(d => {
+                contenido += d.nro + ". " + d.pregunta + "\n";
+                if (d.estado === "CORRECTA") {
+                    contenido += "   - Respuesta: " + d.alumno + " [CORRECTA]\n\n";
+                } else {
+                    contenido += "   - Respuesta del Alumno: " + d.alumno + " [INCORRECTA]\n";
+                    contenido += "   - Respuesta Correcta: " + d.correcta + "\n\n";
+                }
+            });
+        } else {
+            contenido += "(Detalle no disponible para este registro)\n";
+        }
+
+        let blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Examen_" + res.doc + "_" + res.nombre.replace(/\s+/g, '_') + ".txt";
+        link.click();
+    }
+
+    function descargarNotasDocente() {
+        let resultadosGuardados = JSON.parse(localStorage.getItem('resultadosPSeInt') || '[]');
+        if (resultadosGuardados.length === 0) {
+            alert("No hay exámenes registrados en este equipo.");
+            return;
+        }
+
+        let csv = "Documento,Estudiante,Grado,Nivel Examen,Aciertos Teóricos,Salidas Pantalla,Nota Teoría,Enunciado Punto 21,Fecha,Código Práctica\n";
+        resultadosGuardados.forEach(r => {
+            let enunciadoLimpio = r.variantePractica ? r.variantePractica.replace(/"/g, '""') : "";
+            let codigoLimpio = r.codigo ? r.codigo.replace(/(\r\n|\n|\r)/g, " ").replace(/"/g, '""') : "";
+            csv += '"' + r.doc + '","' + r.nombre + '","' + r.grado + '","' + r.version + '",' + r.aciertos + ',' + r.vecesSalioPantalla + ',' + r.notaTeoria + ',"' + enunciadoLimpio + '","' + r.fecha + '","' + codigoLimpio + '"\n';
+        });
+
+        let blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Consolidado_Examenes_Informatica.csv";
+        link.click();
+    }
+</script>
+</body>
+</html>
